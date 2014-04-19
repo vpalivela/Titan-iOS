@@ -16,7 +16,8 @@
 		CCB5BCFE190324C300FADB70 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCB5BCFD190324C300FADB70 /* UIKit.framework */; };
 		CCB5BD01190324C300FADB70 /* libTitanIOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CCB5BCE9190324C300FADB70 /* libTitanIOS.a */; };
 		CCB5BD07190324C300FADB70 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = CCB5BD05190324C300FADB70 /* InfoPlist.strings */; };
-		CCB5BD09190324C300FADB70 /* MathSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = CCB5BD08190324C300FADB70 /* MathSpec.m */; };
+		CCBB58791903382700465AB4 /* HttpConnectionSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBB58781903382700465AB4 /* HttpConnectionSpec.m */; };
+		CCBB587C1903383E00465AB4 /* HttpConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBB587B1903383E00465AB4 /* HttpConnection.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,7 +56,9 @@
 		CCB5BCFD190324C300FADB70 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		CCB5BD04190324C300FADB70 /* TitanIOSTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TitanIOSTests-Info.plist"; sourceTree = "<group>"; };
 		CCB5BD06190324C300FADB70 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		CCB5BD08190324C300FADB70 /* MathSpec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MathSpec.m; sourceTree = "<group>"; };
+		CCBB58781903382700465AB4 /* HttpConnectionSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpConnectionSpec.m; sourceTree = "<group>"; };
+		CCBB587A1903383E00465AB4 /* HttpConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpConnection.h; sourceTree = "<group>"; };
+		CCBB587B1903383E00465AB4 /* HttpConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpConnection.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +122,8 @@
 				CCB5BCF1190324C300FADB70 /* TitanIOS.h */,
 				CCB5BCF3190324C300FADB70 /* TitanIOS.m */,
 				CCB5BCEF190324C300FADB70 /* Supporting Files */,
+				CCBB587A1903383E00465AB4 /* HttpConnection.h */,
+				CCBB587B1903383E00465AB4 /* HttpConnection.m */,
 			);
 			path = TitanIOS;
 			sourceTree = "<group>";
@@ -134,8 +139,8 @@
 		CCB5BD02190324C300FADB70 /* TitanIOSTests */ = {
 			isa = PBXGroup;
 			children = (
-				CCB5BD08190324C300FADB70 /* MathSpec.m */,
 				CCB5BD03190324C300FADB70 /* Supporting Files */,
+				CCBB58781903382700465AB4 /* HttpConnectionSpec.m */,
 			);
 			path = TitanIOSTests;
 			sourceTree = "<group>";
@@ -266,6 +271,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CCB5BCF4190324C300FADB70 /* TitanIOS.m in Sources */,
+				CCBB587C1903383E00465AB4 /* HttpConnection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,7 +279,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CCB5BD09190324C300FADB70 /* MathSpec.m in Sources */,
+				CCBB58791903382700465AB4 /* HttpConnectionSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
