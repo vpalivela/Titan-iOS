@@ -21,50 +21,63 @@ describe(@"construction", ^{
     });
 });
 
-describe(@"GET", ^{
-    __block NSMutableURLRequest *mockRequest = [NSMutableURLRequest mock];
+describe(@"createRequestForEndpoint", ^{
+    __block NSMutableURLRequest *mockRequest = [NSMutableURLRequest nullMock];
     
-    beforeEach(^{
-        [[NSMutableURLRequest should] receive:@selector(alloc) andReturn:mockRequest];
-    });
-    
-    it(@"should create a http getrequest to endpoint with auth token", ^{
-        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/status", baseUrl]];
-        [[mockRequest should] receive:@selector(initWithURL:) andReturn:mockRequest withArguments:url];
+    it(@"should create a http get request to endpoint with auth token", ^{
+        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/endpoint", baseUrl]];
+        [[NSMutableURLRequest should] receive:@selector(requestWithURL:) andReturn:mockRequest withArguments:url];
         [[mockRequest should] receive:@selector(setValue:forKey:) andReturn:nil withArguments:@"Basic someToken", @"Authorization"];
         [[mockRequest should] receive:@selector(setHTTPMethod:) withArguments:@"GET"];
-        [connection get:@"/status" withSuccess:^(NSDictionary *jsonResponse) {} withFailure:^(NSError *error) {}];
-    });
-
-    
-    xit(@"should send a request asynchronously", ^{
-        [[mockRequest should] receive:@selector(initWithURL:) andReturn:mockRequest];
         
-//        [[NSURLConnection should] receive:@selector(sendAsynchronousRequest:queue:completionHandler:) withArguments:any(), any(), any()];
-        [connection get:@"/status" withSuccess:^(NSDictionary *jsonResponse) {} withFailure:^(NSError *error) {}];
+        [connection createRequestForEndpoint:@"/endpoint"];
     });
     
-    
-    xit(@"should only return on success block when the request was successful", ^{
-        
-        __block BOOL isSuccessfulCalled = NO;
-        __block BOOL isErrorCalled      = NO;
-        
-        NSURLConnection *mockConnection = [NSURLConnection nullMock];
-        
-        [[NSURLConnection should] receive:@selector(alloc) andReturn:mockConnection];
-        [[NSURLConnection should] receive:@selector(initWithRequest:delegate:) andReturn:mockConnection];
-        
+});
 
+describe(@"GET", ^{
+    __block NSMutableURLRequest *mockRequest = [NSMutableURLRequest nullMock];
+
+    __block BOOL isSuccessfulCalled = NO;
+    __block BOOL isErrorCalled      = NO;
+    
+    beforeEach(^{
+        [[connection should] receive:@selector(createRequestForEndpoint:) andReturn:mockRequest];
+    });
+    
+    it(@"should only return on success block when the request was successful", ^{
+        
+        [NSURLConnection stub:@selector(sendAsynchronousRequest:queue:completionHandler:) withBlock:^id(NSArray *params) {
+            void (^completionHandler)(NSURLResponse *response, NSData *data, NSError *connectionError) = params[2];
+            completionHandler(nil, [NSData new], nil);
+            return nil;
+        }];
+        
         [connection get:@"/status" withSuccess:^(NSDictionary *jsonResponse) {
             isSuccessfulCalled = YES;
         } withFailure:^(NSError *error) {
             isErrorCalled = YES;
         }];
         
-//        [[theValue(isSuccessfulCalled) shouldEventually] beYes];
-//        [[theValue(isErrorCalled) shouldEventually] beNo];
+        [[theValue(isSuccessfulCalled) shouldEventually] beYes];
+        [[theValue(isErrorCalled) shouldEventually] beNo];
+    });
+    
+    it(@"should only return on error block when the request was errored out", ^{
+        [NSURLConnection stub:@selector(sendAsynchronousRequest:queue:completionHandler:) withBlock:^id(NSArray *params) {
+            void (^completionHandler)(NSURLResponse *response, NSData *data, NSError *connectionError) = params[2];
+            completionHandler(nil, nil, [NSError new]);
+            return nil;
+        }];
         
+        [connection get:@"/status" withSuccess:^(NSDictionary *jsonResponse) {
+            isSuccessfulCalled = YES;
+        } withFailure:^(NSError *error) {
+            isErrorCalled = YES;
+        }];
+        
+        [[theValue(isSuccessfulCalled) shouldEventually] beNo];
+        [[theValue(isErrorCalled) shouldEventually] beYes];
     });
 });
 

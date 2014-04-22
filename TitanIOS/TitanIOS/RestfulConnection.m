@@ -27,17 +27,27 @@
     return self;
 }
 
-- (void)get:(NSString *)endpoint withSuccess:(OnSuccess)onSucessBlock withFailure:(OnFailure)onFailureBlock
+- (NSMutableURLRequest *)createRequestForEndpoint:(NSString *)endpoint
 {
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", self.url, endpoint]];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     
     [request setValue:[NSString stringWithFormat:@"Basic %@", self.authorizationToken] forKey:@"Authorization"];
     [request setHTTPMethod:@"GET"];
-    
-//    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-//        
-//    }];
+    return request;
+}
+
+- (void)get:(NSString *)endpoint withSuccess:(OnSuccess)onSucessBlock withFailure:(OnFailure)onFailureBlock
+{
+    NSMutableURLRequest *request = [self createRequestForEndpoint:endpoint];
+
+    [NSURLConnection sendAsynchronousRequest:request queue:nil completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if(connectionError){
+            onFailureBlock(connectionError);
+        } else if (data) {
+            onSucessBlock(nil);
+        }
+    }];
 }
 
 

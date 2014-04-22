@@ -20,6 +20,7 @@ typedef void(^OnFailure)(NSError *error);
 - (id)initWithUrl:(NSString *)url andAuthorizationToken:(NSString *)token;
 
 // Helpers
+- (NSMutableURLRequest *)createRequestForEndpoint:(NSString *)endpoint;
 - (void)get:(NSString *)endpoint withSuccess:(OnSuccess)onSucessBlock withFailure:(OnFailure)onFailureBlock;
 
 @end
