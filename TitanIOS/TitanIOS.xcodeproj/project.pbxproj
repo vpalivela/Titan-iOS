@@ -85,6 +85,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CC5436E71913279C00AFD276 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				CCBB587A1903383E00465AB4 /* RestfulConnection.h */,
+				CCBB587B1903383E00465AB4 /* RestfulConnection.m */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		CCB5BCE0190324C300FADB70 = {
 			isa = PBXGroup;
 			children = (
@@ -119,11 +128,10 @@
 		CCB5BCEE190324C300FADB70 /* TitanIOS */ = {
 			isa = PBXGroup;
 			children = (
+				CC5436E71913279C00AFD276 /* Network */,
 				CCB5BCF1190324C300FADB70 /* TitanIOS.h */,
 				CCB5BCF3190324C300FADB70 /* TitanIOS.m */,
 				CCB5BCEF190324C300FADB70 /* Supporting Files */,
-				CCBB587A1903383E00465AB4 /* RestfulConnection.h */,
-				CCBB587B1903383E00465AB4 /* RestfulConnection.m */,
 			);
 			path = TitanIOS;
 			sourceTree = "<group>";
