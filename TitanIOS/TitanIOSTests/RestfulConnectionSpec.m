@@ -42,6 +42,8 @@ describe(@"GET", ^{
     __block BOOL isErrorCalled      = NO;
     
     beforeEach(^{
+        isSuccessfulCalled = NO;
+        isErrorCalled      = NO;
         [[connection should] receive:@selector(createRequestForEndpoint:) andReturn:mockRequest];
     });
     
@@ -59,8 +61,8 @@ describe(@"GET", ^{
             isErrorCalled = YES;
         }];
         
-        [[theValue(isSuccessfulCalled) shouldEventually] beYes];
-        [[theValue(isErrorCalled) shouldEventually] beNo];
+        [[theValue(isSuccessfulCalled) should] beYes];
+        [[theValue(isErrorCalled) should] beNo];
     });
     
     it(@"should only return on error block when the request was errored out", ^{
@@ -76,8 +78,8 @@ describe(@"GET", ^{
             isErrorCalled = YES;
         }];
         
-        [[theValue(isSuccessfulCalled) shouldEventually] beNo];
-        [[theValue(isErrorCalled) shouldEventually] beYes];
+        [[theValue(isSuccessfulCalled) should] beNo];
+        [[theValue(isErrorCalled) should] beYes];
     });
 });
 

@@ -8,16 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		9BC4F79B94574E1380FF34F6 /* libPods-TitanIOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 052369A9BF04404E9B05F730 /* libPods-TitanIOSTests.a */; };
+		CC92B75B19132E0D002797D5 /* ManagedPasteboardSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = CC92B75A19132E0D002797D5 /* ManagedPasteboardSpec.m */; };
+		CC92B75D1913314B002797D5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC92B75C1913314B002797D5 /* UIKit.framework */; };
+		CC92B75E19133175002797D5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC92B75C1913314B002797D5 /* UIKit.framework */; };
 		CCB5BCED190324C300FADB70 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCB5BCEC190324C300FADB70 /* Foundation.framework */; };
 		CCB5BCF2190324C300FADB70 /* TitanIOS.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = CCB5BCF1190324C300FADB70 /* TitanIOS.h */; };
 		CCB5BCF4190324C300FADB70 /* TitanIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = CCB5BCF3190324C300FADB70 /* TitanIOS.m */; };
 		CCB5BCFB190324C300FADB70 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCB5BCFA190324C300FADB70 /* XCTest.framework */; };
 		CCB5BCFC190324C300FADB70 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCB5BCEC190324C300FADB70 /* Foundation.framework */; };
-		CCB5BCFE190324C300FADB70 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CCB5BCFD190324C300FADB70 /* UIKit.framework */; };
 		CCB5BD01190324C300FADB70 /* libTitanIOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CCB5BCE9190324C300FADB70 /* libTitanIOS.a */; };
 		CCB5BD07190324C300FADB70 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = CCB5BD05190324C300FADB70 /* InfoPlist.strings */; };
 		CCBB58791903382700465AB4 /* RestfulConnectionSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBB58781903382700465AB4 /* RestfulConnectionSpec.m */; };
 		CCBB587C1903383E00465AB4 /* RestfulConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CCBB587B1903383E00465AB4 /* RestfulConnection.m */; };
+		CCCFF04D19132A2B00DF1DEE /* ManagedPasteboard.m in Sources */ = {isa = PBXBuildFile; fileRef = CCCFF04C19132A2B00DF1DEE /* ManagedPasteboard.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +49,8 @@
 /* Begin PBXFileReference section */
 		052369A9BF04404E9B05F730 /* libPods-TitanIOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TitanIOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E778B7426A455999F6577F /* Pods-TitanIOSTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TitanIOSTests.xcconfig"; path = "Pods/Pods-TitanIOSTests.xcconfig"; sourceTree = "<group>"; };
+		CC92B75A19132E0D002797D5 /* ManagedPasteboardSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ManagedPasteboardSpec.m; sourceTree = "<group>"; };
+		CC92B75C1913314B002797D5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		CCB5BCE9190324C300FADB70 /* libTitanIOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libTitanIOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCB5BCEC190324C300FADB70 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CCB5BCF0190324C300FADB70 /* TitanIOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TitanIOS-Prefix.pch"; sourceTree = "<group>"; };
@@ -53,12 +58,13 @@
 		CCB5BCF3190324C300FADB70 /* TitanIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TitanIOS.m; sourceTree = "<group>"; };
 		CCB5BCF9190324C300FADB70 /* TitanIOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TitanIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCB5BCFA190324C300FADB70 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		CCB5BCFD190324C300FADB70 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		CCB5BD04190324C300FADB70 /* TitanIOSTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "TitanIOSTests-Info.plist"; sourceTree = "<group>"; };
 		CCB5BD06190324C300FADB70 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		CCBB58781903382700465AB4 /* RestfulConnectionSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestfulConnectionSpec.m; sourceTree = "<group>"; };
 		CCBB587A1903383E00465AB4 /* RestfulConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestfulConnection.h; sourceTree = "<group>"; };
 		CCBB587B1903383E00465AB4 /* RestfulConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestfulConnection.m; sourceTree = "<group>"; };
+		CCCFF04B19132A2B00DF1DEE /* ManagedPasteboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ManagedPasteboard.h; sourceTree = "<group>"; };
+		CCCFF04C19132A2B00DF1DEE /* ManagedPasteboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ManagedPasteboard.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC92B75D1913314B002797D5 /* UIKit.framework in Frameworks */,
 				CCB5BCED190324C300FADB70 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -75,10 +82,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				CCB5BCFB190324C300FADB70 /* XCTest.framework in Frameworks */,
-				CCB5BCFE190324C300FADB70 /* UIKit.framework in Frameworks */,
 				CCB5BD01190324C300FADB70 /* libTitanIOS.a in Frameworks */,
 				CCB5BCFC190324C300FADB70 /* Foundation.framework in Frameworks */,
 				9BC4F79B94574E1380FF34F6 /* libPods-TitanIOSTests.a in Frameworks */,
+				CC92B75E19133175002797D5 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,9 +124,9 @@
 		CCB5BCEB190324C300FADB70 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CC92B75C1913314B002797D5 /* UIKit.framework */,
 				CCB5BCEC190324C300FADB70 /* Foundation.framework */,
 				CCB5BCFA190324C300FADB70 /* XCTest.framework */,
-				CCB5BCFD190324C300FADB70 /* UIKit.framework */,
 				052369A9BF04404E9B05F730 /* libPods-TitanIOSTests.a */,
 			);
 			name = Frameworks;
@@ -128,6 +135,7 @@
 		CCB5BCEE190324C300FADB70 /* TitanIOS */ = {
 			isa = PBXGroup;
 			children = (
+				CCCFF04A19132A0B00DF1DEE /* Storage */,
 				CC5436E71913279C00AFD276 /* Network */,
 				CCB5BCF1190324C300FADB70 /* TitanIOS.h */,
 				CCB5BCF3190324C300FADB70 /* TitanIOS.m */,
@@ -149,6 +157,7 @@
 			children = (
 				CCB5BD03190324C300FADB70 /* Supporting Files */,
 				CCBB58781903382700465AB4 /* RestfulConnectionSpec.m */,
+				CC92B75A19132E0D002797D5 /* ManagedPasteboardSpec.m */,
 			);
 			path = TitanIOSTests;
 			sourceTree = "<group>";
@@ -160,6 +169,15 @@
 				CCB5BD05190324C300FADB70 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		CCCFF04A19132A0B00DF1DEE /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				CCCFF04B19132A2B00DF1DEE /* ManagedPasteboard.h */,
+				CCCFF04C19132A2B00DF1DEE /* ManagedPasteboard.m */,
+			);
+			name = Storage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -279,6 +297,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CCB5BCF4190324C300FADB70 /* TitanIOS.m in Sources */,
+				CCCFF04D19132A2B00DF1DEE /* ManagedPasteboard.m in Sources */,
 				CCBB587C1903383E00465AB4 /* RestfulConnection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -288,6 +307,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CCBB58791903382700465AB4 /* RestfulConnectionSpec.m in Sources */,
+				CC92B75B19132E0D002797D5 /* ManagedPasteboardSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
