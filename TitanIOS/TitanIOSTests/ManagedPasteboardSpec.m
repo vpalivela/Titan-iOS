@@ -15,6 +15,8 @@
 @property UIPasteboard *pasteboard;
 @property NSMutableDictionary *contents;
 
+- (void)writeOperationWithData:(NSData *)data forKey:(NSString *)key;
+- (id)performwithCallback:(id)callback operation:(id(^)(void))operationBlock;
 @end
 
 SPEC_BEGIN(ManagedPasteboardSpec)
@@ -42,8 +44,35 @@ describe(@"constructor", ^{
     });
 });
 
-//describe(@"instance methods", ^{
-//    
-//});
+describe(@"instance methods", ^{
+    it(@"should handle async read", ^{
+        id callbackMock = [KWMock nullMockForProtocol:@protocol(StorageOperation)];
+        [[callbackMock shouldEventuallyBeforeTimingOutAfter(5)] receive:@selector(readCompleted:)];
+        NSData *value = [managedPasteboard read:@"test" withCallBack:callbackMock];
+        [[value should] beNil];
+    });
+    
+    it(@"should handle sync read", ^{
+        NSData *value = [managedPasteboard read:@"test" withCallBack:nil];
+        [[value shouldNot] beNil];
+        [[value should] equal:[NSData data]];
+    });
+    
+    it(@"should handle sync write", ^{
+        [[managedPasteboard should] receive:@selector(writeOperationWithData:forKey:) withArguments:[NSData data], @"someKey"];
+        [managedPasteboard writeData:[NSData data] forKey:@"someKey" withCallback:nil];
+    });
+    
+    it(@"should handle async write", ^{
+        id callbackMock = [KWMock nullMockForProtocol:@protocol(StorageOperation)];
+        [[callbackMock shouldEventuallyBeforeTimingOutAfter(5)] receive:@selector(writeCompleted)];
+
+//        [[managedPasteboard should] receive:@selector(performwithCallback:operation:)];
+//        [[managedPasteboard should] receive:@selector(writeOperationWithData:forKey:) withArguments:[NSData data], @"someKey"];
+
+        
+        [managedPasteboard writeData:[NSData data] forKey:@"someKey" withCallback:callbackMock];
+    });
+});
 
 SPEC_END
