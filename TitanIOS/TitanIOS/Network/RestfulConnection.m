@@ -8,12 +8,14 @@
 
 #import "RestfulConnection.h"
 
-@interface RestfulConnection ()
+//@interface RestfulConnection ()
+//
+//
+//@end
 
-
-@end
-
-@implementation RestfulConnection
+@implementation RestfulConnection {
+    
+}
 
 - (id)initWithUrl:(NSString *)url andAuthorizationToken:(NSString *)token
 {

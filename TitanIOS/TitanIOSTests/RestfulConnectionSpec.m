@@ -8,11 +8,19 @@
 #import "Kiwi.h"
 #import "RestfulConnection.h"
 
+
 SPEC_BEGIN(RestfulConnectionSpec)
 
-__block NSString *baseUrl             = @"http://sometesturl.com";
-__block NSString *token               = @"someToken";
-__block RestfulConnection *connection = [[RestfulConnection alloc] initWithUrl:baseUrl andAuthorizationToken:token];
+__block NSString *baseUrl;
+__block NSString *token;
+__block RestfulConnection *connection;
+
+
+beforeEach(^{
+    baseUrl    = @"http://sometesturl.com";
+    token      = @"someToken";
+    connection = [[RestfulConnection alloc] initWithUrl:baseUrl andAuthorizationToken:token];
+});
 
 describe(@"construction", ^{
     it(@"should create with url and authorization token", ^{
