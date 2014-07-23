@@ -1,0 +1,151 @@
+BUILD_DIR           = File.absolute_path('build')
+BUILD_LOG = BUILD_DIR + "/build.log"
+XCBUILD_LOG         = BUILD_DIR + "/xcodebuild.log"
+SDK_BUILD_VERSION   = ENV["SDK_BUILD_VERSION"] || ""
+BUILD_CONFIGURATION = ENV["BUILD_CONFIGURATION"] || "Debug"
+OCLINT_BIN_DIR      = ENV["OCLINT_BIN_DIR"] || "oclint/oclint-0.9.dev.e350919/bin"
+WORKSPACE           = 'TitanIOS.xcworkspace'
+SCHEME              = 'TitanIOS'
+
+##############################################################################
+# Standard tasks
+##############################################################################
+
+task :default do
+  system "rake --tasks"
+end
+
+desc "Task for CI Box"
+task ci: ['clean','test','lint','cov']
+
+desc "Cleans the build artifacts"
+task :clean do
+  clean
+  run_cmd('rm -rf build')
+end
+
+desc "Builds the application"
+task :build do
+  build
+end
+
+desc "Tests the application"
+task :test do
+  test
+end
+
+desc "Runs lint on the application"
+task :lint do
+  log_info("Starting","lint")
+
+  if !File.exists?(XCBUILD_LOG)
+    puts "xcodebuild.log not found in #{BUILD_DIR}".red
+    exit 1
+  end
+
+  run_cmd("oclint-xcodebuild", "#{OCLINT_BIN_DIR}/oclint-xcodebuild #{XCBUILD_LOG}")
+
+  @finished = false
+  threadA = Thread.fork do
+    run_cmd("oclint-json-compilation-database","#{OCLINT_BIN_DIR}/oclint-json-compilation-database -e Pods -- -report-type=html -o #{BUILD_DIR}/lint.html -max-priority-1=9999 -max-priority-2=9999 -max-priority-3=9999 -rc LONG_LINE=160 -rc LONG_VARIABLE_NAME=25")
+    @finished = true
+  end
+
+  threadB = Thread.fork do
+    until(@finished) do
+      sleep 1
+      print '.'
+    end
+  end
+
+  threadA.join
+  threadB.join
+
+  puts ""
+  run_cmd("lint cleanup", "rm -rf compile_commands.json")
+  puts "\nLint Finished, open ./build/lint.html to view results".green
+end
+
+desc "Generates code coverage report"
+task :cov do
+  # run_cmd("cleancov", "XcodeCoverage/cleancov")
+  # run_cmd("exportenv.sh", "XcodeCoverage/exportenv.sh")
+  run_cmd("getcov", "XcodeCoverage/getcov")
+  puts "\nCode Coverage Finished, open ./build/lcov/index.html to view results".green
+end
+
+task :openResults do
+  run_cmd("open ./build/lcov/index.html")
+  run_cmd("open ./build/lint.html")
+end
+
+##############################################################################
+# Private Methods
+##############################################################################
+
+private
+
+def xcbuild(build_type = '', xcpretty_args = '')
+  Dir.mkdir(BUILD_DIR) unless Dir.exists?(BUILD_DIR)
+  run_cmd("xcodebuild clean " + build_type, "xcodebuild -workspace #{WORKSPACE} -scheme #{SCHEME} -sdk iphonesimulator#{SDK_BUILD_VERSION} -configuration #{BUILD_CONFIGURATION} clean #{build_type} CONFIGURATION_BUILD_DIR=#{BUILD_DIR}  2>&1 | tee #{XCBUILD_LOG} 2>&1 | xcpretty -c #{xcpretty_args}; exit ${PIPESTATUS[0]}")
+end
+
+def clean
+  xcbuild
+end;
+
+def build
+  xcbuild('build')
+end
+
+def test
+  close_simulator
+  xcbuild("test", "--report junit")
+  close_simulator
+end
+
+def close_simulator
+  log_info("Closing","iPhone Simulator")
+    `killall -m -KILL \"iPhone Simulator\"`
+    puts ""
+end
+
+def run_cmd(desc = nil, cmd)
+  desc = cmd if desc.nil?
+  log_info("Running", desc)
+  Dir.mkdir(BUILD_DIR) unless Dir.exists?(BUILD_DIR)
+  unless system("#{cmd} > #{BUILD_LOG}")
+    log_error(desc)
+    exit 1
+  end
+end
+
+def log_info(action, description)
+  puts "\u25B8".encode('utf-8').yellow + " #{action}".bold + " #{description}"
+end
+
+def log_error(description)
+  puts "\u25B8".encode('utf-8').red + " FAILED".bold.red + " #{description}".red
+end
+
+class String
+  def colorize(color_code)
+    "\e[#{color_code}m#{self}\e[0m"
+  end
+
+  def red
+    colorize(31)
+  end
+
+  def green
+    colorize(32)
+  end
+
+  def yellow
+    colorize(33)
+  end
+
+  def bold
+    "\033[1m#{self}\033[22m"
+  end
+end
