@@ -6,7 +6,6 @@
 #
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-BUILT_PRODUCTS_DIR="${SRCROOT}/build"
 source ${DIR}/envcov.sh
 
 remove_old_report()
@@ -27,9 +26,6 @@ enter_lcov_dir()
 
 gather_coverage()
 {
-  echo "ROOT: " ${SRCROOT}
-  echo "OBJ_DIR: " ${OBJ_DIR}
-  echo "LCOV_INFO: "${LCOV_INFO}
     LCOV --capture --derive-func-data -b "${SRCROOT}" -d "${OBJ_DIR}" -o ${LCOV_INFO}
 }
 
