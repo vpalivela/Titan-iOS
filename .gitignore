@@ -30,3 +30,5 @@ xcuserdata
 !xcshareddata
 *.xccheckout
 
+#Third party
+ThirdParty/
