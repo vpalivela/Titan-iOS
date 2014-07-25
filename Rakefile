@@ -1,9 +1,10 @@
-BUILD_DIR = File.absolute_path('build')
+BUILD_DIR   = File.absolute_path('build')
+REPORTS_DIR = BUILD_DIR + "/reports"
 
 # Output
 XCBUILD_LOG      = BUILD_DIR + "/xcodebuild.log"
 XCCOV_LOG        = BUILD_DIR + "/xccoverage.log"
-LINT_DESTINATION = BUILD_DIR + "/reports/lint.html"
+LINT_DESTINATION = REPORTS_DIR + "/lint.html"
 
 # Libraries
 OCLINT_BIN_DIR    = ENV["OCLINT_BIN_DIR"] || "ThirdParty/oclint-0.9.dev.648e9af/bin"
@@ -22,6 +23,9 @@ BUILD_CONFIGURATION = ENV["BUILD_CONFIGURATION"] || "Debug"
 task :default do
   system "rake --tasks"
 end
+
+desc "All in one task to build, test, generate report and open them."
+task go: ['test', 'lint', 'cov', 'reports']
 
 desc "Task for CI Box"
 task ci: ['test','lint','cov']
@@ -66,21 +70,18 @@ task :lint do
 
   puts ""
   run_cmd("lint cleanup", "rm -rf compile_commands.json")
-  puts "\nLint Finished, open ./build/reports/lint.html to view results".green
+  puts "\nLint Finished, open #{REPORTS_DIR}/lint.html to view results".green
 end
 
 desc "Generates code coverage report"
 task :cov do
-  # run_cmd("cleancov", "XcodeCoverage/cleancov")
-  # run_cmd("exportenv.sh", "XcodeCoverage/exportenv.sh")
   run_cmd("cicov", "#{XCODECOVERAGE_DIR}/cicov")
-  puts "\nCode Coverage Finished, open ./build/reports/lcov/index.html to view results".green
+  run_cmd("Code Coverage Report", "ln -s #{REPORTS_DIR}/lcov/index.html #{REPORTS_DIR}/codecoverage.html")
+  puts "\nCode Coverage Finished, open #{REPORTS_DIR}/codecoverage.html to view results".green
 end
 
-task :show_reports do
-  run_cmd("open ./build/reports/lcov/index.html")
-  run_cmd("open ./build/reports/lint.html")
-  run_cmd("open ./build/reports/tests.html")
+task :reports do
+  run_cmd("open #{REPORTS_DIR}")
 end
 
 ##############################################################################
@@ -90,7 +91,7 @@ end
 def xcbuild(build_type = '', xcpretty_args = '')
   unless Dir.exists?(BUILD_DIR)
     Dir.mkdir(BUILD_DIR)
-    Dir.mkdir(BUILD_DIR+"/reports")
+    Dir.mkdir(REPORTS_DIR)
   end
 
   run_cmd("xcodebuild " + build_type,
