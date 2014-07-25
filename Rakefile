@@ -1,4 +1,4 @@
-BUILD_DIR   = File.absolute_path('build')
+BUILD_DIR   = File.expand_path('build')
 REPORTS_DIR = BUILD_DIR + "/reports"
 
 # Output
@@ -25,10 +25,10 @@ task :default do
 end
 
 desc "All in one task to build, test, generate report and open them."
-task go: ['test', 'lint', 'cov', 'reports']
+task :go => ['test', 'lint', 'cov', 'reports']
 
 desc "Task for CI Box"
-task ci: ['test','lint','cov']
+task :ci => ['test','lint','cov']
 
 desc "Cleans the build artifacts"
 task :clean do
@@ -55,10 +55,9 @@ task :lint do
     exit 1
   end
 
-  run_cmd("oclint-xcodebuild", "#{OCLINT_BIN_DIR}/oclint-xcodebuild #{XCBUILD_LOG}")
+  run_cmd("#{OCLINT_BIN_DIR}/oclint-xcodebuild #{XCBUILD_LOG}", "oclint-xcodebuild")
 
-  run_cmd("oclint-json-compilation-database",
-          "#{OCLINT_BIN_DIR}/oclint-json-compilation-database \
+  run_cmd("#{OCLINT_BIN_DIR}/oclint-json-compilation-database \
                 -e Pods -- \
                 -disable-rule=FeatureEnvy \
                 -report-type=html -o #{LINT_DESTINATION} \
@@ -66,17 +65,18 @@ task :lint do
                 -max-priority-2=9999 \
                 -max-priority-3=9999 \
                 -rc LONG_LINE=120 \
-                -rc LONG_VARIABLE_NAME=25")
+                -rc LONG_VARIABLE_NAME=25",
+          "oclint-json-compilation-database")
 
   puts ""
-  run_cmd("lint cleanup", "rm -rf compile_commands.json")
+  run_cmd("rm -rf compile_commands.json", "lint cleanup")
   puts "\nLint Finished, open #{REPORTS_DIR}/lint.html to view results".green
 end
 
 desc "Generates code coverage report"
 task :cov do
-  run_cmd("cicov", "#{XCODECOVERAGE_DIR}/cicov")
-  run_cmd("Code Coverage Report", "ln -s #{REPORTS_DIR}/lcov/index.html #{REPORTS_DIR}/codecoverage.html")
+  run_cmd("#{XCODECOVERAGE_DIR}/cicov", "cicov")
+  run_cmd("ln -s #{REPORTS_DIR}/lcov/index.html #{REPORTS_DIR}/codecoverage.html", "Code Coverage Report")
   puts "\nCode Coverage Finished, open #{REPORTS_DIR}/codecoverage.html to view results".green
 end
 
@@ -89,13 +89,12 @@ end
 ##############################################################################
 
 def xcbuild(build_type = '', xcpretty_args = '')
-  unless Dir.exists?(BUILD_DIR)
+  unless File.exists?(BUILD_DIR)
     Dir.mkdir(BUILD_DIR)
     Dir.mkdir(REPORTS_DIR)
   end
 
-  run_cmd("xcodebuild " + build_type,
-          "xcodebuild \
+  run_cmd("xcodebuild \
             -workspace #{WORKSPACE} \
             -scheme #{SCHEME} \
             -sdk iphonesimulator#{SDK_BUILD_VERSION} \
@@ -103,7 +102,8 @@ def xcbuild(build_type = '', xcpretty_args = '')
             #{build_type} 2>&1 | \
             tee #{XCBUILD_LOG} 2>&1 | \
             xcpretty -c #{xcpretty_args}; \
-            exit ${PIPESTATUS[0]}")
+            exit ${PIPESTATUS[0]}",
+          "xcodebuild " + build_type)
 end
 
 def clean
@@ -132,13 +132,12 @@ end
 
 private
 
-def run_cmd(desc = nil, cmd)
-  desc = cmd if desc.nil?
+def run_cmd( cmd, desc = nil)
+  desc ||= cmd
   log_info("Running", desc)
-  Dir.mkdir(BUILD_DIR) unless Dir.exists?(BUILD_DIR)
+  Dir.mkdir(BUILD_DIR) unless File.exists?(BUILD_DIR)
   unless system("#{cmd}")
     log_error(desc)
-    exit 1
   end
 end
 
@@ -148,6 +147,7 @@ end
 
 def log_error(description)
   puts "\u25B8".encode('utf-8').red + " FAILED".bold.red + " #{description}".red
+  exit 1
 end
 
 class String
