@@ -1,17 +1,17 @@
 #!/bin/sh
 #
-#   Copyright 2014 Jonathan M. Reid. See LICENSE.txt
-#   Created by: Jon Reid, http://qualitycoding.org/
+#   Copyright 2014 Venkat Palivela
+#   Created by: Venkat Palivela and Jon Reid, http://qualitycoding.org/
 #   Source: https://github.com/jonreid/XcodeCoverage
 #
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-BUILT_PRODUCTS_DIR="${SRCROOT}/build"
 source ${DIR}/envcov.sh
+CI_DIR="${SRCROOT}/build/reports"
 
 remove_old_report()
 {
-    pushd ${BUILT_PRODUCTS_DIR}
+    pushd ${CI_DIR}
     if [ -e lcov ]; then
         rm -r lcov
     fi
@@ -20,16 +20,13 @@ remove_old_report()
 
 enter_lcov_dir()
 {
-    cd ${BUILT_PRODUCTS_DIR}
+    cd ${CI_DIR}
     mkdir lcov
     cd lcov
 }
 
 gather_coverage()
 {
-  echo "ROOT: " ${SRCROOT}
-  echo "OBJ_DIR: " ${OBJ_DIR}
-  echo "LCOV_INFO: "${LCOV_INFO}
     LCOV --capture --derive-func-data -b "${SRCROOT}" -d "${OBJ_DIR}" -o ${LCOV_INFO}
 }
 

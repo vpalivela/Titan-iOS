@@ -24,23 +24,21 @@ task :default do
 end
 
 desc "Task for CI Box"
-task ci: ['clean','test','lint','cov']
+task ci: ['test','lint','cov']
 
 desc "Cleans the build artifacts"
 task :clean do
   clean
-  run_cmd("cleancov", "XcodeCoverage/cleancov")
   run_cmd('rm -rf build')
-
 end
 
 desc "Builds the application"
-task :build do
+task :build => :clean do
   build
 end
 
 desc "Tests the application"
-task :test do
+task :test => :clean do
   test
 end
 
@@ -55,47 +53,34 @@ task :lint do
 
   run_cmd("oclint-xcodebuild", "#{OCLINT_BIN_DIR}/oclint-xcodebuild #{XCBUILD_LOG}")
 
-  @finished = false
-  threadA = Thread.fork do
-    run_cmd("oclint-json-compilation-database",
-            "#{OCLINT_BIN_DIR}/oclint-json-compilation-database \
-                  -e Pods -- \
-                  -report-type=html -o #{LINT_DESTINATION} \
-                  -max-priority-1=9999 \
-                  -max-priority-2=9999 \
-                  -max-priority-3=9999 \
-                  -rc LONG_LINE=120 \
-                  -rc LONG_VARIABLE_NAME=25")
-
-    @finished = true
-  end
-
-  threadB = Thread.fork do
-    until(@finished) do
-      sleep 1
-      print '.'
-    end
-  end
-
-  threadA.join
-  threadB.join
+  run_cmd("oclint-json-compilation-database",
+          "#{OCLINT_BIN_DIR}/oclint-json-compilation-database \
+                -e Pods -- \
+                -disable-rule=FeatureEnvy \
+                -report-type=html -o #{LINT_DESTINATION} \
+                -max-priority-1=9999 \
+                -max-priority-2=9999 \
+                -max-priority-3=9999 \
+                -rc LONG_LINE=120 \
+                -rc LONG_VARIABLE_NAME=25")
 
   puts ""
   run_cmd("lint cleanup", "rm -rf compile_commands.json")
-  puts "\nLint Finished, open ./build/lint.html to view results".green
+  puts "\nLint Finished, open ./build/reports/lint.html to view results".green
 end
 
 desc "Generates code coverage report"
 task :cov do
   # run_cmd("cleancov", "XcodeCoverage/cleancov")
   # run_cmd("exportenv.sh", "XcodeCoverage/exportenv.sh")
-  run_cmd("cicov", "#{XCODECOVERAGE_DIR}/cicov >> #{XCCOV_LOG}")
-  puts "\nCode Coverage Finished, open ./build/lcov/index.html to view results".green
+  run_cmd("cicov", "#{XCODECOVERAGE_DIR}/cicov")
+  puts "\nCode Coverage Finished, open ./build/reports/lcov/index.html to view results".green
 end
 
-task :show do
-  run_cmd("open ./build/lcov/index.html")
-  run_cmd("open ./build/lint.html")
+task :show_reports do
+  run_cmd("open ./build/reports/lcov/index.html")
+  run_cmd("open ./build/reports/lint.html")
+  run_cmd("open ./build/reports/tests.html")
 end
 
 ##############################################################################
@@ -103,23 +88,25 @@ end
 ##############################################################################
 
 def xcbuild(build_type = '', xcpretty_args = '')
-  Dir.mkdir(BUILD_DIR) unless Dir.exists?(BUILD_DIR)
+  unless Dir.exists?(BUILD_DIR)
+    Dir.mkdir(BUILD_DIR)
+    Dir.mkdir(BUILD_DIR+"/reports")
+  end
 
-  run_cmd("xcodebuild clean " + build_type,
+  run_cmd("xcodebuild " + build_type,
           "xcodebuild \
             -workspace #{WORKSPACE} \
             -scheme #{SCHEME} \
             -sdk iphonesimulator#{SDK_BUILD_VERSION} \
             -configuration #{BUILD_CONFIGURATION} \
-            clean #{build_type} \
-            CONFIGURATION_BUILD_DIR=#{BUILD_DIR}  2>&1 | \
+            #{build_type} 2>&1 | \
             tee #{XCBUILD_LOG} 2>&1 | \
             xcpretty -c #{xcpretty_args}; \
             exit ${PIPESTATUS[0]}")
 end
 
 def clean
-  xcbuild
+  xcbuild('clean')
 end;
 
 def build
