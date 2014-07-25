@@ -142,11 +142,11 @@ def run_cmd( cmd, desc = nil)
 end
 
 def log_info(action, description)
-  puts "\u25B8".encode('utf-8').yellow + " #{action}".bold + " #{description}"
+  puts "▸".yellow + " #{action}".bold + " #{description}"
 end
 
 def log_error(description)
-  puts "\u25B8".encode('utf-8').red + " FAILED".bold.red + " #{description}".red
+  puts "x".red + " FAILED".bold.red + " #{description}".red
   exit 1
 end
 
