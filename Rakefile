@@ -1,3 +1,5 @@
+require 'shellwords'
+
 BUILD_DIR   = File.expand_path('build')
 REPORTS_DIR = BUILD_DIR + "/reports"
 
@@ -68,8 +70,8 @@ task :lint do
                 -rc LONG_VARIABLE_NAME=25",
           "oclint-json-compilation-database")
 
-  puts ""
   run_cmd("rm -rf compile_commands.json", "lint cleanup")
+
   puts "\nLint Finished, open #{REPORTS_DIR}/lint.html to view results".green
 end
 
@@ -101,7 +103,7 @@ def xcbuild(build_type = '', xcpretty_args = '')
             -configuration #{BUILD_CONFIGURATION} \
             #{build_type} 2>&1 | \
             tee #{XCBUILD_LOG} 2>&1 | \
-            xcpretty -c #{xcpretty_args}; \
+            xcpretty -c --no-utf #{xcpretty_args}; \
             exit ${PIPESTATUS[0]}",
           "xcodebuild " + build_type)
 end
@@ -111,19 +113,22 @@ def clean
 end;
 
 def build
-  xcbuild('build')
+  xcbuild('clean build')
 end
 
 def test
   close_simulator
-  xcbuild("test", "-r html")
+  xcbuild("clean test", "--test -r html")
   close_simulator
 end
 
 def close_simulator
-  log_info("Closing","iPhone Simulator")
-    `killall -m -KILL \"iPhone Simulator\"`
-    puts ""
+  begin
+    log_info("Closing","iPhone Simulator")
+    sh `killall -m -KILL \"iPhone Simulator\"`
+  rescue
+    nil
+  end
 end
 
 ##############################################################################
@@ -142,11 +147,11 @@ def run_cmd( cmd, desc = nil)
 end
 
 def log_info(action, description)
-  puts "▸".yellow + " #{action}".bold + " #{description}"
+  puts ">".yellow + " #{action}".bold + " #{description}"
 end
 
 def log_error(description)
-  puts "x".red + " FAILED".bold.red + " #{description}".red
+  puts "[!]".red + " FAILED".bold.red + " #{description}".red
   exit 1
 end
 
