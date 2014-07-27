@@ -81,13 +81,13 @@
 
 - (NSData *) readOperation {
     // Simulating delay for now
-    [NSThread sleepForTimeInterval:1.0f];
+//    [NSThread sleepForTimeInterval:1.0f];
     return [NSData data];
 }
 
 - (void) writeOperationWithData:(NSData *)data forKey:(NSString *)key {
     // Simulating delay for now
-    [NSThread sleepForTimeInterval:3.0f];
+//    [NSThread sleepForTimeInterval:3.0f];
 }
 
 @end
