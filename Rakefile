@@ -35,6 +35,7 @@ task :ci => ['test','lint','cov']
 desc "Cleans the build artifacts"
 task :clean do
   clean
+  run_cmd("rm -rf ~/Library/Developer/Xcode/DerivedData/#{SCHEME}-*", 'DerivedData Cleanup')
   run_cmd('rm -rf build')
 end
 
@@ -53,8 +54,7 @@ task :lint do
   log_info("Starting","lint")
 
   if !File.exists?(XCBUILD_LOG)
-    puts "xcodebuild.log not found in #{BUILD_DIR}".red
-    exit 1
+    log_error("xcodebuild.log not found in #{BUILD_DIR}")
   end
 
   run_cmd("#{OCLINT_BIN_DIR}/oclint-xcodebuild #{XCBUILD_LOG}", "oclint-xcodebuild")
@@ -151,7 +151,7 @@ def log_info(action, description)
 end
 
 def log_error(description)
-  puts "[!]".red + " FAILED".bold.red + " #{description}".red
+  puts "[!] FAILED #{description}".red
   exit 1
 end
 
