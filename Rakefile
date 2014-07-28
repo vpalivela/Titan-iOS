@@ -1,7 +1,8 @@
 require 'shellwords'
 
-BUILD_DIR   = File.expand_path('build')
-REPORTS_DIR = BUILD_DIR + "/reports"
+BUILD_DIR    = File.expand_path('build')
+REPORTS_DIR  = BUILD_DIR + "/reports"
+USE_XCPRETTY = true
 
 # Output
 XCBUILD_LOG      = BUILD_DIR + "/xcodebuild.log"
@@ -15,7 +16,7 @@ XCODECOVERAGE_DIR = ENV["XCODECOVERAGE_DIR"] || "XcodeCoverage"
 # Build
 WORKSPACE           = 'TitanIOS.xcworkspace'
 SCHEME              = 'TitanIOS'
-SDK_BUILD_VERSION   = ENV["SDK_BUILD_VERSION"] || ""
+SDK_BUILD_VERSION   = ENV["SDK_BUILD_VERSION"] || "7.1"
 BUILD_CONFIGURATION = ENV["BUILD_CONFIGURATION"] || "Debug"
 
 ##############################################################################
@@ -98,16 +99,27 @@ def xcbuild(build_type = '', xcpretty_args = '')
     Dir.mkdir(REPORTS_DIR)
   end
 
-  run_cmd("xcodebuild \
-            -workspace #{WORKSPACE} \
-            -scheme #{SCHEME} \
-            -sdk iphonesimulator#{SDK_BUILD_VERSION} \
-            -configuration #{BUILD_CONFIGURATION} \
-            #{build_type} 2>&1 | \
-            tee #{XCBUILD_LOG} 2>&1 | \
-            xcpretty -c --no-utf #{xcpretty_args}; \
-            exit ${PIPESTATUS[0]}",
-          "xcodebuild " + build_type)
+  if USE_XCPRETTY
+    run_cmd("xcodebuild \
+              -workspace #{WORKSPACE} \
+              -scheme #{SCHEME} \
+              -sdk iphonesimulator#{SDK_BUILD_VERSION} \
+              -configuration #{BUILD_CONFIGURATION} \
+              #{build_type} 2>&1 | \
+              tee #{XCBUILD_LOG} 2>&1 | \
+              xcpretty -c --no-utf #{xcpretty_args}; \
+              exit ${PIPESTATUS[0]}",
+            "xcodebuild " + build_type)
+  else
+    run_cmd("xcodebuild \
+              -workspace #{WORKSPACE} \
+              -scheme #{SCHEME} \
+              -sdk iphonesimulator#{SDK_BUILD_VERSION} \
+              -configuration #{BUILD_CONFIGURATION} \
+              #{build_type} 2>&1 | \
+              tee #{XCBUILD_LOG} ",
+            "xcodebuild " + build_type)
+  end
 end
 
 def close_simulator
