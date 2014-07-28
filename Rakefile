@@ -34,19 +34,21 @@ task :ci => ['test','lint','cov']
 
 desc "Cleans the build artifacts"
 task :clean do
-  clean
+  xcbuild('clean')
   run_cmd("rm -rf ~/Library/Developer/Xcode/DerivedData/#{SCHEME}-*", 'DerivedData Cleanup')
   run_cmd('rm -rf build')
 end
 
 desc "Builds the application"
 task :build => :clean do
-  build
+  xcbuild('clean build')
 end
 
 desc "Tests the application"
 task :test => :clean do
-  test
+  close_simulator
+  xcbuild("clean test", "--test -r html")
+  close_simulator
 end
 
 desc "Runs lint on the application"
@@ -106,20 +108,6 @@ def xcbuild(build_type = '', xcpretty_args = '')
             xcpretty -c --no-utf #{xcpretty_args}; \
             exit ${PIPESTATUS[0]}",
           "xcodebuild " + build_type)
-end
-
-def clean
-  xcbuild('clean')
-end;
-
-def build
-  xcbuild('clean build')
-end
-
-def test
-  close_simulator
-  xcbuild("clean test", "--test -r html")
-  close_simulator
 end
 
 def close_simulator
