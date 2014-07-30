@@ -1,8 +1,6 @@
-require 'shellwords'
-
+# Directories
 BUILD_DIR    = File.expand_path('build')
 REPORTS_DIR  = BUILD_DIR + "/reports"
-USE_XCPRETTY = true
 
 # Output
 XCBUILD_LOG      = BUILD_DIR + "/xcodebuild.log"
@@ -12,6 +10,7 @@ LINT_DESTINATION = REPORTS_DIR + "/lint.html"
 # Libraries
 OCLINT_BIN_DIR    = ENV["OCLINT_BIN_DIR"] || "ThirdParty/oclint-0.9.dev.648e9af/bin"
 XCODECOVERAGE_DIR = ENV["XCODECOVERAGE_DIR"] || "XcodeCoverage"
+USE_XCPRETTY      = Gem::Specification::find_all_by_name('xcpretty').any?
 
 # Build
 WORKSPACE           = 'TitanIOS.xcworkspace'
@@ -36,7 +35,7 @@ task :ci => ['test','lint','cov']
 desc "Cleans the build artifacts"
 task :clean do
   xcbuild('clean')
-  run_cmd("rm -rf ~/Library/Developer/Xcode/DerivedData/#{SCHEME}-*", 'DerivedData Cleanup')
+  # run_cmd("rm -rf ~/Library/Developer/Xcode/DerivedData/#{SCHEME}-*", 'DerivedData Cleanup')
   run_cmd('rm -rf build')
 end
 
