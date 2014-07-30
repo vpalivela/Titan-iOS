@@ -8,9 +8,9 @@ XCCOV_LOG        = BUILD_DIR + "/xccoverage.log"
 LINT_DESTINATION = REPORTS_DIR + "/lint.html"
 
 # Libraries
-OCLINT_BIN_DIR    = ENV["OCLINT_BIN_DIR"] || "ThirdParty/oclint-0.9.dev.648e9af/bin"
-XCODECOVERAGE_DIR = ENV["XCODECOVERAGE_DIR"] || "XcodeCoverage"
-USE_XCPRETTY      = Gem::Specification::find_all_by_name('xcpretty').any?
+OCLINT_BIN_DIR     = ENV["OCLINT_BIN_DIR"] || "ThirdParty/oclint-0.9.dev.648e9af/bin"
+XCODECOVERAGE_DIR  = ENV["XCODECOVERAGE_DIR"] || "XcodeCoverage"
+XCPRETTY_AVALIABLE = Gem::Specification::find_all_by_name('xcpretty').any?
 
 # Build
 WORKSPACE           = 'TitanIOS.xcworkspace'
@@ -97,27 +97,23 @@ def xcbuild(build_type = '', xcpretty_args = '')
     Dir.mkdir(BUILD_DIR)
     Dir.mkdir(REPORTS_DIR)
   end
+  
+  xcodebuild = "xcodebuild \
+                  -workspace #{WORKSPACE} \
+                  -scheme #{SCHEME} \
+                  -sdk iphonesimulator#{SDK_BUILD_VERSION} \
+                  -destination platform='iOS Simulator',OS=#{SDK_BUILD_VERSION},name='iPhone Retina (4-inch)' \
+                  -configuration #{BUILD_CONFIGURATION} \
+                  #{build_type} 2>&1 | \
+                  tee #{XCBUILD_LOG} "
 
-  if USE_XCPRETTY
-    run_cmd("xcodebuild \
-              -workspace #{WORKSPACE} \
-              -scheme #{SCHEME} \
-              -sdk iphonesimulator#{SDK_BUILD_VERSION} \
-              -configuration #{BUILD_CONFIGURATION} \
-              #{build_type} 2>&1 | \
-              tee #{XCBUILD_LOG} 2>&1 | \
-              xcpretty -c --no-utf #{xcpretty_args}; \
-              exit ${PIPESTATUS[0]}",
+  if XCPRETTY_AVALIABLE
+    run_cmd(xcodebuild +
+            "2>&1 | xcpretty -c --no-utf #{xcpretty_args}; \
+            exit ${PIPESTATUS[0]}",
             "xcodebuild " + build_type)
   else
-    run_cmd("xcodebuild \
-              -workspace #{WORKSPACE} \
-              -scheme #{SCHEME} \
-              -sdk iphonesimulator#{SDK_BUILD_VERSION} \
-              -configuration #{BUILD_CONFIGURATION} \
-              #{build_type} 2>&1 | \
-              tee #{XCBUILD_LOG} ",
-            "xcodebuild " + build_type)
+    run_cmd(xcodebuild, "xcodebuild " + build_type)
   end
 end
 
