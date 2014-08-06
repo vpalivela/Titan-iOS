@@ -1,6 +1,6 @@
 # Directories
 BUILD_DIR    = File.expand_path('build')
-REPORTS_DIR  = BUILD_DIR + "/reports"
+REPORTS_DIR  = BUILD_DIR + "/reports-" + Time.now.strftime("%d-%m-%Y")
 
 # Output
 XCBUILD_LOG      = BUILD_DIR + "/xcodebuild.log"
@@ -35,7 +35,6 @@ task :ci => ['test','lint','cov']
 desc "Cleans the build artifacts"
 task :clean do
   xcbuild('clean')
-  # run_cmd("rm -rf ~/Library/Developer/Xcode/DerivedData/#{SCHEME}-*", 'DerivedData Cleanup')
   run_cmd('rm -rf build')
 end
 
@@ -47,7 +46,7 @@ end
 desc "Tests the application"
 task :test => :clean do
   close_simulator
-  xcbuild("clean test", "--test -r html")
+  xcbuild("clean test", "--test -r html --output '#{REPORTS_DIR}/tests.html'")
   close_simulator
 end
 
@@ -78,10 +77,23 @@ task :lint do
 end
 
 desc "Generates code coverage report"
-task :cov do
+task :cov => :gencov do
   run_cmd("#{XCODECOVERAGE_DIR}/cicov", "cicov")
   run_cmd("ln -s #{REPORTS_DIR}/lcov/index.html #{REPORTS_DIR}/codecoverage.html", "Code Coverage Report")
   puts "\nCode Coverage Finished, open #{REPORTS_DIR}/codecoverage.html to view results".green
+end
+
+task :gencov do
+  run_cmd("xcodebuild \
+              -workspace TitanIOS.xcworkspace \
+              -scheme TitanIOS \
+              -sdk iphonesimulator#{SDK_BUILD_VERSION} \
+              -destination platform='iOS Simulator',OS=#{SDK_BUILD_VERSION},name='iPhone Retina (4-inch)' \
+              -configuration #{BUILD_CONFIGURATION} \
+              -showBuildSettings | \
+          egrep '( BUILT_PRODUCTS_DIR)|(NATIVE_ARCH )|(OBJECT_FILE_DIR_normal)|(SRCROOT)|(OBJROOT)' \
+          | tr -d ' ' | sed -e 's/^/export /' | sed -e 's/$/\"/' | sed 's/=/=\"/g' | sed 's/NATIVE_ARCH/CURRENT_ARCH/' \> #{XCODECOVERAGE_DIR}/env.sh",
+          "Load Build Variables")
 end
 
 task :reports do
@@ -97,7 +109,7 @@ def xcbuild(build_type = '', xcpretty_args = '')
     Dir.mkdir(BUILD_DIR)
     Dir.mkdir(REPORTS_DIR)
   end
-  
+
   xcodebuild = "xcodebuild \
                   -workspace #{WORKSPACE} \
                   -scheme #{SCHEME} \

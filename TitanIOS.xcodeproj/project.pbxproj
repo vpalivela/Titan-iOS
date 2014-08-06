@@ -190,7 +190,6 @@
 				CCB5BCE5190324C300FADB70 /* Sources */,
 				CCB5BCE6190324C300FADB70 /* Frameworks */,
 				CCB5BCE7190324C300FADB70 /* CopyFiles */,
-				CCF212D5197735FC0064734A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -274,19 +273,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Pods-TitanIOSTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		CCF212D5197735FC0064734A /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = XcodeCoverage/exportenv.sh;
 		};
 		EEA96835858D41C3A3655B0F /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
