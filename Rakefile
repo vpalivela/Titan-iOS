@@ -26,6 +26,11 @@ task :default do
   system "rake --tasks"
 end
 
+desc "Shows the tasks supported"
+task :help do
+  system "rake --tasks"
+end
+
 desc "All in one task to build, test, generate report and open them."
 task :go => ['test', 'lint', 'cov', 'reports']
 
