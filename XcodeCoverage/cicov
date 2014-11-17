@@ -7,7 +7,9 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source ${DIR}/envcov.sh
-CI_DIR="${SRCROOT}/build/reports"
+NOW=$(date +"%m-%d-%Y")
+CI_DIR="${DIR}/../build/reports-$NOW"
+LCOV_INFO="${DIR}/../build/Coverage.info"
 
 remove_old_report()
 {
@@ -47,4 +49,5 @@ remove_old_report
 enter_lcov_dir
 gather_coverage
 exclude_data
+enter_lcov_dir
 generate_report

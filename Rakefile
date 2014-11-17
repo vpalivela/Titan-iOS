@@ -1,6 +1,6 @@
 # Directories
 BUILD_DIR    = File.expand_path('build')
-REPORTS_DIR  = BUILD_DIR + "/reports-" + Time.now.strftime("%d-%m-%Y")
+REPORTS_DIR  = BUILD_DIR + "/reports-" + Time.now.strftime("%m-%d-%Y")
 
 # Output
 XCBUILD_LOG      = BUILD_DIR + "/xcodebuild.log"
@@ -14,10 +14,16 @@ XCPRETTY_AVALIABLE = Gem::Specification::find_all_by_name('xcpretty').any?
 
 # Build
 WORKSPACE           = 'TitanIOS.xcworkspace'
-SCHEME              = 'TitanIOS'
+DEFAULT_SCHEME      = 'TitanIOS'
 SIMULATOR_NAME      = ENV["SIMULATOR_NAME"] || "iPhone 5"
 SDK_BUILD_VERSION   = ENV["SDK_BUILD_VERSION"] || "8.1"
 BUILD_CONFIGURATION = ENV["BUILD_CONFIGURATION"] || "Debug"
+OCLINT_EXCLUDES     = [
+  'ThirdParty', 'Crashlytics', 'Experitest', 'FacebookSDK',
+  'Instruments', 'Lib', 'Pods', 'OpenUDID.m', 'Resources',
+  'TestData', 'Frameworks', 'Supporting Files', 'Unit Tests',
+  'Logic Tests', '\.storyboard$', '\.xib$', 'Contract Tests'
+]
 
 ##############################################################################
 # Standard tasks
@@ -41,52 +47,36 @@ task :ci => ['test','lint','cov']
 desc "Cleans the build artifacts"
 task :clean do
   xcbuild('clean')
+
+  run_cmd("rm -rf ~/Library/Developer/Xcode/DerivedData/ModuleCache/*", 'ModuleCache Cleanup')
+  run_cmd("rm -rf ~/Library/Developer/Xcode/DerivedData/#{DEFAULT_SCHEME}-*", 'DerivedData Cleanup')
   run_cmd('rm -rf build')
 end
 
 desc "Builds the application"
-task :build => :clean do
-  xcbuild('clean build')
+task :build do
+  xcbuild('build')
 end
 
 desc "Tests the application"
 task :test => :clean do
   close_simulator
-  xcbuild("clean test", "--test -r html --output '#{REPORTS_DIR}/tests.html'")
-  close_simulator
+  begin
+    xcbuild("clean test", "--test -r html --output '#{REPORTS_DIR}/tests.html'")
+  ensure
+    close_simulator
+  end
 end
 
 desc "Runs lint on the application"
 task :lint do
-  log_info("Starting","lint")
-
-  if !File.exists?(XCBUILD_LOG)
-    log_error("xcodebuild.log not found in #{BUILD_DIR}")
-  end
-
-  run_cmd("#{OCLINT_BIN_DIR}/oclint-xcodebuild #{XCBUILD_LOG}", "oclint-xcodebuild")
-
-  run_cmd("#{OCLINT_BIN_DIR}/oclint-json-compilation-database \
-                -e Pods -- \
-                -disable-rule=FeatureEnvy \
-                -report-type=html -o #{LINT_DESTINATION} \
-                -max-priority-1=9999 \
-                -max-priority-2=9999 \
-                -max-priority-3=9999 \
-                -rc LONG_LINE=120 \
-                -rc LONG_VARIABLE_NAME=25",
-          "oclint-json-compilation-database")
-
-  run_cmd("rm -rf compile_commands.json", "lint cleanup")
-
-  puts "\nLint Finished, open #{REPORTS_DIR}/lint.html to view results".green
+  lint("#{lint_excludes}")
 end
 
 desc "Generates code coverage report"
 task :cov => :gencov do
   run_cmd("#{XCODECOVERAGE_DIR}/cicov", "cicov")
-  run_cmd("ln -s #{REPORTS_DIR}/lcov/index.html #{REPORTS_DIR}/codecoverage.html", "Code Coverage Report")
-  puts "\nCode Coverage Finished, open #{REPORTS_DIR}/codecoverage.html to view results".green
+  puts "\nCode Coverage Finished, open #{REPORTS_DIR} to view results".green
 end
 
 task :gencov do
@@ -116,14 +106,16 @@ def xcbuild(build_type = '', xcpretty_args = '')
     Dir.mkdir(REPORTS_DIR)
   end
 
+  # Default scheme
+  scheme ||= DEFAULT_SCHEME
+
   xcodebuild = "xcodebuild \
-                  -workspace #{WORKSPACE} \
-                  -scheme #{SCHEME} \
-                  -sdk iphonesimulator#{SDK_BUILD_VERSION} \
-                  -destination platform='iOS Simulator',OS=#{SDK_BUILD_VERSION},name='iPhone Retina (4-inch)' \
-                  -configuration #{BUILD_CONFIGURATION} \
-                  #{build_type} 2>&1 | \
-                  tee #{XCBUILD_LOG} "
+                      -workspace #{WORKSPACE} \
+                      -scheme #{scheme} \
+                      -sdk iphonesimulator#{SDK_BUILD_VERSION} \
+                      -destination platform='iOS Simulator',OS=#{SDK_BUILD_VERSION},name='#{SIMULATOR_NAME}' \
+                      -configuration #{BUILD_CONFIGURATION} \
+                      #{build_type} 2>&1 | tee #{XCBUILD_LOG} "
 
   if XCPRETTY_AVALIABLE
     run_cmd(xcodebuild +
@@ -135,6 +127,42 @@ def xcbuild(build_type = '', xcpretty_args = '')
   end
 end
 
+def lint(lint_args = '')
+  log_info("Starting","lint " + Time.now.inspect)
+
+  if !File.exists?(XCBUILD_LOG)
+    log_error("xcodebuild.log not found in #{BUILD_DIR}. Please run `rake build`")
+  end
+
+  if !File.exists?(OCLINT_BIN_DIR)
+    log_error("Could not locate oclint. Please make sure oclint is installed and set the 'OCLINT_BIN_DIR' environment variable.")
+  end
+
+  if @ci_task
+    report_type = "-report-type=pmd -o #{REPORTS_DIR}/oclint.xml"
+  else
+    report_type = "-report-type=html -o #{REPORTS_DIR}/oclint.html"
+  end
+
+  run_cmd("#{OCLINT_BIN_DIR}/oclint-xcodebuild #{lint_excludes}\
+                #{XCBUILD_LOG}", "oclint-xcodebuild")
+
+  run_cmd("#{OCLINT_BIN_DIR}/oclint-json-compilation-database \
+                #{lint_args} -- \
+                -disable-rule=FeatureEnvy \
+                #{report_type} \
+                -max-priority-1=100 \
+                -max-priority-2=1000 \
+                -max-priority-3=4000 \
+                -rc CYCLOMATIC_COMPLEXITY=7 \
+                -rc LONG_LINE=200 \
+                -rc LONG_VARIABLE_NAME=50",
+          "oclint")
+
+  run_cmd("rm -rf compile_commands.json", "cleanup " + Time.now.inspect)
+  puts "\nLint Finished, open #{REPORTS_DIR} to view results".green
+end
+
 def close_simulator
   begin
     log_info("Closing","iPhone Simulator")
@@ -142,6 +170,10 @@ def close_simulator
   rescue
     nil
   end
+end
+
+def lint_excludes
+  "-e '#{OCLINT_EXCLUDES.join("' -e '")}'"
 end
 
 ##############################################################################
