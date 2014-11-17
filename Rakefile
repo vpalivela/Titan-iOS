@@ -15,7 +15,8 @@ XCPRETTY_AVALIABLE = Gem::Specification::find_all_by_name('xcpretty').any?
 # Build
 WORKSPACE           = 'TitanIOS.xcworkspace'
 SCHEME              = 'TitanIOS'
-SDK_BUILD_VERSION   = ENV["SDK_BUILD_VERSION"] || "7.1"
+SIMULATOR_NAME      = ENV["SIMULATOR_NAME"] || "iPhone 5"
+SDK_BUILD_VERSION   = ENV["SDK_BUILD_VERSION"] || "8.1"
 BUILD_CONFIGURATION = ENV["BUILD_CONFIGURATION"] || "Debug"
 
 ##############################################################################
